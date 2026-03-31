@@ -1,0 +1,41 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "flutter-go-to-market-toolkit",
+  "version": "1.0.0",
+  "description": "Launch your Flutter app to Google Play Store and Apple App Store in 24 hours — guided lifecycle with CI/CD pipelines, testing tracks, store listings, monetization, code push, and validation gates.",
+  "owner": {
+    "name": "Luis Andres Pena Castillo",
+    "email": "lapc506@users.noreply.github.com"
+  },
+  "plugins": [
+    {
+      "name": "flutter-go-to-market",
+      "description": "Guided Flutter app launch lifecycle: 4 spaces (Code Readiness, Pipeline & Signing, Store Preparation, Launch) with validation gates. 1 command, 8 auto-activating skills, 2 agents. Covers Codemagic/GitHub Actions CI/CD, Google Play + App Store setup, RevenueCat monetization, Shorebird code push, TestFlight, BrowserStack, and pre-launch checklist based on Andrea Bizzotto's methodology.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Luis Andres Pena Castillo",
+        "email": "lapc506@users.noreply.github.com"
+      },
+      "source": "./",
+      "homepage": "https://github.com/lapc506/flutter-go-to-market-toolkit",
+      "category": "productivity",
+      "keywords": [
+        "claude-code",
+        "claude-code-plugin",
+        "flutter",
+        "cicd",
+        "codemagic",
+        "github-actions",
+        "google-play",
+        "app-store",
+        "testflight",
+        "revenuecat",
+        "shorebird",
+        "go-to-market",
+        "mobile",
+        "release",
+        "deployment"
+      ]
+    }
+  ]
+}

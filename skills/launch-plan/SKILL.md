@@ -1,0 +1,181 @@
+---
+name: launch-plan
+description: "Master orchestration for launching a Flutter app to Google Play and App Store in 24 hours. Use this skill when the user wants to ship a Flutter app, plan a mobile release, create a launch timeline, or asks about the steps to publish to app stores. Also triggers when the user mentions 'release plan', 'launch checklist', 'ship my app', 'publish to stores', 'go live', or 'release strategy'. Even if they just say 'I want to launch my app' — this is the skill to use."
+---
+
+# Launch Plan: Flutter App to Stores in 24 Hours
+
+You are orchestrating the launch of a Flutter app to Google Play Store and Apple App Store. This skill provides the master timeline, decision framework, and coordination across all other flutter-go-to-market skills.
+
+## Before You Start
+
+Verify these prerequisites with the user. Do not skip any — a missing prerequisite will block the timeline.
+
+### Accounts (must exist before Hour 0)
+- [ ] **Google Play Console** — developer account ($25 one-time). Identity verification takes 2-5 days if not already done
+- [ ] **Apple Developer Program** — enrolled ($99/year). Enrollment review takes up to 48 hours
+- [ ] **Codemagic account** (or GitHub with Actions enabled) — for CI/CD
+- [ ] **Firebase project** — for App Distribution (internal testing channel)
+- [ ] **Sentry project** — for crash reporting and symbol upload
+- [ ] **RevenueCat account** (if monetizing with subscriptions) — for in-app purchases
+- [ ] **Shorebird account** (recommended) — for over-the-air code push updates
+
+### Code Readiness
+- [ ] Flutter app builds successfully on both platforms (`flutter build appbundle --release` and `flutter build ios --release --no-codesign`)
+- [ ] Tests pass (`flutter test`)
+- [ ] App icon and splash screen configured
+- [ ] Version and build number set in `pubspec.yaml`
+- [ ] Bundle ID / package name finalized (cannot change after first upload)
+
+### Assets Ready
+- [ ] App icon (512x512 PNG, no transparency for Google Play; 1024x1024 for App Store)
+- [ ] Feature graphic (1024x500 for Google Play)
+- [ ] Screenshots: minimum 2 per device type per store
+- [ ] Short description (80 chars) and full description (4000 chars)
+- [ ] Privacy policy URL (required by both stores)
+
+If any prerequisite is missing, help the user resolve it before starting the timeline.
+
+## 24-Hour Timeline
+
+### Phase 1: Pipeline (Hours 0-6)
+
+**Goal:** Automated builds that produce signed, store-ready artifacts on every push.
+
+1. **Choose CI/CD platform** — use the decision tree below
+2. **Invoke `flutter-go-to-market:cicd-setup`** to configure the pipeline
+3. **Set up code signing:**
+   - Android: generate upload keystore, configure Gradle signing
+   - iOS: create distribution certificate + provisioning profile in Apple Developer portal
+4. **Configure environment injection** — template-based secrets (never commit real values)
+5. **Verify:** push to trigger pipeline, confirm signed artifact is produced
+
+**Quality gates to wire in:**
+- `dart format --set-exit-if-changed .`
+- `flutter analyze --fatal-infos`
+- `flutter test --coverage` with configurable threshold (default 70%)
+
+Read `references/timeline-24h.md` for detailed time breakdowns per step.
+
+### Phase 2: Store Setup (Hours 6-10)
+
+**Goal:** Both store dashboards configured, ready to receive builds.
+
+1. **Invoke `flutter-go-to-market:store-setup`** for guided setup
+2. **Google Play Console:**
+   - Create app, set default language
+   - Complete store listing (invoke `flutter-go-to-market:store-listing`)
+   - Content rating questionnaire
+   - Pricing and distribution (countries, free/paid)
+   - Data safety section
+3. **App Store Connect:**
+   - Create app record with bundle ID
+   - Fill app information (category, content rights, age rating)
+   - Prepare store listing (invoke `flutter-go-to-market:store-listing`)
+
+### Phase 3: Testing (Hours 10-18)
+
+**Goal:** App validated by real users on real devices before production release.
+
+1. **Invoke `flutter-go-to-market:testing-tracks`** for the full testing progression
+2. **Internal testing (both platforms simultaneously):**
+   - Google Play: internal testing track (100 testers, available in seconds, no review)
+   - Apple TestFlight: internal testing (100 App Store Connect users, no review)
+3. **Pre-launch report** (Google Play): automatically generated on closed/open track upload — check for crashes, accessibility, security
+4. **Real device testing** (optional but recommended): BrowserStack or Sauce Labs for device matrix coverage
+5. **Closed/external testing:**
+   - Google Play: closed testing track with email lists
+   - TestFlight: external testing (up to 10,000 testers, first build requires App Review)
+6. **Collect feedback, fix critical issues, rebuild**
+
+### Phase 4: Launch (Hours 18-24)
+
+**Goal:** Production release live on both stores.
+
+1. **Production build:**
+   - Enable obfuscation: `--obfuscate --split-debug-info=build/symbols`
+   - Upload Sentry debug symbols: `sentry-cli upload-dif build/symbols`
+2. **Submit to Google Play:**
+   - Upload AAB to production track
+   - Staged rollout recommended (start at 20%)
+   - Use managed publishing to control exact go-live moment
+3. **Submit to App Store:**
+   - Upload IPA via Xcode, Transporter, or CI/CD
+   - Submit for App Review (typical: 24-48h, but often faster)
+   - Enable phased release if desired
+4. **Post-launch monitoring:**
+   - Sentry crash dashboard
+   - Google Play pre-launch report + Android vitals
+   - App Store Connect crash reports
+   - Review store ratings/feedback within first 24h
+
+## CI/CD Platform Decision Tree
+
+Choose based on the user's context:
+
+```
+Need native mobile CI/CD with minimal config?
+├── Yes → Codemagic (Priority 1)
+│         - Native Flutter support, no Docker overhead
+│         - Built-in code signing management
+│         - Mac machines for iOS without extra config
+│         - 500 free build minutes/month
+│
+└── No, already invested in GitHub ecosystem?
+    └── Yes → GitHub Actions (Priority 2)
+              - Free 2000 min/month (Linux), 200 min (macOS)
+              - Native repo integration, PR checks
+              - Larger ecosystem of actions
+              - More manual signing setup required
+```
+
+**When to recommend Codemagic:**
+- New project with no existing CI/CD
+- Team unfamiliar with YAML pipeline config
+- Need iOS builds without managing macOS runners
+- Want built-in Flutter tooling (version management, signing UI)
+
+**When to recommend GitHub Actions:**
+- Already using GitHub Actions for backend/infra
+- Need monorepo path-filtered workflows
+- Want to keep everything in one platform
+- Cost-sensitive (GitHub free tier is generous for Linux builds)
+
+## SRE Integration Points
+
+These reliability practices are woven into the pipeline, not bolted on after:
+
+| Practice | Where it applies | Skill reference |
+|----------|-----------------|-----------------|
+| Coverage threshold | PR quality gate | `flutter-go-to-market:cicd-setup` |
+| Sentry symbol upload | Production build step | `flutter-go-to-market:cicd-setup` |
+| Pre-launch crash detection | Testing phase | `flutter-go-to-market:testing-tracks` |
+| Staged rollout | Production release | This skill (Phase 4) |
+| Structured build logging | All CI/CD steps | `flutter-go-to-market:cicd-setup` |
+
+## Coordinating Skills
+
+When orchestrating a full launch, invoke skills in this order:
+
+1. `flutter-go-to-market:pre-launch-checklist` — verify readiness (flavors, error monitoring, force update, security)
+2. `flutter-go-to-market:cicd-setup` — pipeline and signing
+3. `flutter-go-to-market:app-security` — Firebase App Check + hardening
+4. `flutter-go-to-market:store-setup` — console/connect configuration
+5. `flutter-go-to-market:store-listing` — assets and descriptions
+6. `flutter-go-to-market:monetization` — RevenueCat / Lemon Squeezy (if applicable)
+7. `flutter-go-to-market:testing-tracks` — progressive testing
+8. `flutter-go-to-market:code-push` — Shorebird setup for post-launch patching
+9. Come back here for Phase 4 (production release)
+
+Each skill is independently usable — a user may invoke `flutter-go-to-market:testing-tracks` alone if their pipeline is already set up.
+
+## Reference Architecture: flutter_ship_app
+
+The [flutter_ship_app](https://github.com/bizz84/flutter_ship_app) by Andrea Bizzotto demonstrates many of these patterns in a real codebase:
+- Multi-flavor setup (dev/stg/prod) with separate Firebase projects
+- Sentry + Mixpanel integration per flavor
+- Shorebird code push configuration
+- Force update mechanism via `force_update_helper`
+- Environment variables via `--dart-define-from-file`
+- In-app review prompts
+- Drift database with web support
