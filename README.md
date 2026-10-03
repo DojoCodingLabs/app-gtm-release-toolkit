@@ -1,8 +1,24 @@
+<p align="center">
+  <a href="https://dojocoding.io">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/assets/banner-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="docs/assets/banner-light.svg">
+      <img alt="app-gtm-release-toolkit by Dojo Coding: Ship apps to the stores, gate by gate" src="docs/assets/banner-light.svg" width="100%">
+    </picture>
+  </a>
+</p>
+
 # app-gtm-release-toolkit
+
+**A Claude Code and OpenCode plugin that takes builders from a working app to a published store release, one validation gate at a time.**
 
 Multi-platform app go-to-market and release toolkit. Ship Flutter, Kotlin Multiplatform, Swift native, .NET MAUI, and Progressive Web Apps to Google Play, App Store, Microsoft Store, Snap Store, and alternative channels — through a guided lifecycle with validation gates and persistent checkpoints.
 
 A Claude Code plugin by [Luis Andres Pena Castillo](https://github.com/lapc506).
+
+![Version 2.2.0](https://img.shields.io/badge/version-2.2.0-FF7151?labelColor=201E3D) [![License BSL 1.1](https://img.shields.io/badge/license-BSL%201.1-FF7151?labelColor=201E3D)](LICENSE) ![Claude Code and OpenCode plugin](https://img.shields.io/badge/plugin-Claude%20Code%20%2B%20OpenCode-201E3D?labelColor=201E3D)
+
+[Get started](#install-claude-code) · [Commands](#three-tier-command-architecture) · [Roadmap](#roadmap) · [Report an issue](https://github.com/DojoCodingLabs/app-gtm-release-toolkit/issues/new)
 
 ## Install (Claude Code)
 
@@ -249,3 +265,9 @@ app-gtm-release-toolkit/
 ## License
 
 [Business Source License 1.1](./LICENSE) — you may use, modify, and redistribute for non-competitive purposes. Converts to Non-Profit OSL 3.0 after 5 years.
+
+Built by [Dojo Coding](https://dojocoding.io).
+
+<p align="center">
+  <a href="https://dojocoding.io"><img src="docs/assets/dojocoding-mark.png" alt="Dojo Coding" width="48"></a>
+</p>

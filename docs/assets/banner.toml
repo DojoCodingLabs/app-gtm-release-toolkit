@@ -1,0 +1,15 @@
+name = "app-gtm-release-toolkit"
+tagline = "Ship apps to [the stores], gate by gate"
+chips = ["10 commands / 15 skills"]
+meta = "Source available · Claude Code"
+tile = "/"
+
+[card]
+kind = "ledger"
+label = "Toolkit"
+status = "v2.2.0 · BSL 1.1"
+rows = [
+  ["/ship-advisor", "Picks the right ship-X for your stack", "tier 1"],
+  ["/ship-flutter", "Or /ship-kmp, /ship-maui, /ship-pwa", "tier 2"],
+  ["/ship-everywhere", "Runs every applicable ship-X", "tier 3"],
+]
